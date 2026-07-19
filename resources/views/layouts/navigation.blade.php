@@ -46,8 +46,25 @@
                     @if (isSuperAdmin())
                         <x-nav-link :href="route('departments.index')" :active="request()->routeIs('departments.*')">Departments</x-nav-link>
                     @endif
-                    <x-nav-link :href="route('holidays.index')" :active="request()->routeIs('holidays.*')">Holidays</x-nav-link>
-                    <x-nav-link :href="route('weekend-settings.index')" :active="request()->routeIs('weekend-settings.*')">Weekends</x-nav-link>
+                    {{-- Holidays + Weekends grouped into one dropdown --}}
+                    <div class="relative flex items-center" x-data="{ open: false }">
+                        <button @click="open = !open"
+                                @class([
+                                    'inline-flex items-center gap-1 px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150',
+                                    'border-indigo-400 text-gray-900' => request()->routeIs('holidays.*', 'weekend-settings.*'),
+                                    'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' => ! request()->routeIs('holidays.*', 'weekend-settings.*'),
+                                ])>
+                            Settings
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <div x-show="open" @click.outside="open = false" x-transition style="display:none"
+                             class="absolute left-0 top-full mt-3 w-44 bg-white rounded-md shadow-lg ring-1 ring-black/5 z-50 py-1">
+                            <a href="{{ route('holidays.index') }}"
+                               @class(['block px-4 py-2 text-sm', 'text-brand-600 bg-brand-50 font-medium' => request()->routeIs('holidays.*'), 'text-gray-700 hover:bg-gray-50' => ! request()->routeIs('holidays.*')])>Holidays</a>
+                            <a href="{{ route('weekend-settings.index') }}"
+                               @class(['block px-4 py-2 text-sm', 'text-brand-600 bg-brand-50 font-medium' => request()->routeIs('weekend-settings.*'), 'text-gray-700 hover:bg-gray-50' => ! request()->routeIs('weekend-settings.*')])>Weekends</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
