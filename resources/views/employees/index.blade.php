@@ -28,6 +28,7 @@
                         <th class="py-2 pr-4">Name</th>
                         <th class="py-2 pr-4">Email</th>
                         <th class="py-2 pr-4">Role</th>
+                        <th class="py-2 pr-4">Department</th>
                         <th class="py-2 pr-4">Phone</th>
                         <th class="py-2 pr-4">Joining</th>
                         <th class="py-2 pr-4">Status</th>
@@ -45,8 +46,9 @@
                             </td>
                             <td class="py-2 pr-4">{{ $user->email }}</td>
                             <td class="py-2 pr-4">
-                                <span class="text-[10px] uppercase px-1.5 py-0.5 rounded {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700' }}">{{ $user->role }}</span>
+                                <x-role-badge :role="$user->role" />
                             </td>
+                            <td class="py-2 pr-4">{{ $user->department?->name ?? '—' }}</td>
                             <td class="py-2 pr-4">{{ $user->phone ?? '—' }}</td>
                             <td class="py-2 pr-4">{{ $user->joining_date?->format('j F, Y') ?? '—' }}</td>
                             <td class="py-2 pr-4"><x-status-badge :status="$user->status" /></td>
@@ -61,7 +63,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="py-8 text-center text-gray-500">No employees found.</td></tr>
+                        <tr><td colspan="8" class="py-8 text-center text-gray-500">No employees found.</td></tr>
                     @endforelse
                 </tbody>
             </table>

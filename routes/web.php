@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminLeaveController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiscordController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HolidayController;
@@ -53,6 +54,10 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('admin-leaves', AdminLeaveController::class)
             ->parameters(['admin-leaves' => 'adminLeave']);
         Route::resource('employees', EmployeeController::class);
+        // Departments: only super admins can manage
+        Route::resource('departments', DepartmentController::class)
+            ->except('show')
+            ->middleware('superadmin');
 
         Route::get('holidays-import/sample', [HolidayController::class, 'sample'])->name('holidays.sample');
         Route::post('holidays-import', [HolidayController::class, 'import'])->name('holidays.import');

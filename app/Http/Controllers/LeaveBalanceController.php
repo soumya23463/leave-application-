@@ -17,7 +17,12 @@ class LeaveBalanceController extends Controller
         $query = LeaveBalance::with('employee')->orderByDesc('year');
 
         if (! isAdmin()) {
+            // Employees see only their own balance.
             $query->where('employee_id', authId());
+        } elseif (! isSuperAdmin()) {
+            // Regular admins see only their own department.
+            $deptId = authUser()->department_id;
+            $query->whereHas('employee', fn ($q) => $q->where('department_id', $deptId));
         }
 
         if (isAdmin() && $request->filled('year')) {
@@ -44,6 +49,8 @@ class LeaveBalanceController extends Controller
     {
         $data = $request->validated();
 
+        $this->assertEmployeeInDepartment($data['employee_id'] ?? null);
+
         $data['remaining_days'] = $data['total_days'] + $data['carried_forward'] - $data['used_days'];
 
         LeaveBalance::create($data);
@@ -54,6 +61,7 @@ class LeaveBalanceController extends Controller
     public function show(LeaveBalance $leaveBalance)
     {
         abort_if(! isAdmin() && $leaveBalance->employee_id !== authId(), 403);
+        $this->ensureSameDepartment($leaveBalance);
 
         $leaveBalance->load('employee');
 
@@ -63,6 +71,7 @@ class LeaveBalanceController extends Controller
     public function edit(LeaveBalance $leaveBalance)
     {
         abort_unless(isAdmin(), 403);
+        $this->ensureSameDepartment($leaveBalance);
 
         $employees = $this->employees();
 
@@ -71,7 +80,11 @@ class LeaveBalanceController extends Controller
 
     public function update(LeaveBalanceRequest $request, LeaveBalance $leaveBalance)
     {
+        $this->ensureSameDepartment($leaveBalance);
+
         $data = $request->validated();
+
+        $this->assertEmployeeInDepartment($data['employee_id'] ?? $leaveBalance->employee_id);
 
         $data['remaining_days'] = $data['total_days'] + $data['carried_forward'] - $data['used_days'];
 
@@ -83,6 +96,7 @@ class LeaveBalanceController extends Controller
     public function destroy(LeaveBalance $leaveBalance)
     {
         abort_unless(isAdmin(), 403);
+        $this->ensureSameDepartment($leaveBalance);
 
         $leaveBalance->delete();
 
@@ -93,6 +107,31 @@ class LeaveBalanceController extends Controller
 
     protected function employees()
     {
-        return User::where('role', 'employee')->orderBy('name')->get();
+        return User::where('role', 'employee')
+            ->when(! isSuperAdmin(), fn ($q) => $q->where('department_id', authUser()->department_id))
+            ->orderBy('name')->get();
+    }
+
+    /**
+     * Regular admins may only touch balances of employees in their own department.
+     */
+    protected function ensureSameDepartment(LeaveBalance $leaveBalance): void
+    {
+        if (isAdmin() && ! isSuperAdmin()
+            && $leaveBalance->employee?->department_id !== authUser()->department_id) {
+            abort(403, 'You can only manage balances for your own department.');
+        }
+    }
+
+    protected function assertEmployeeInDepartment(?int $employeeId): void
+    {
+        if (! isAdmin() || isSuperAdmin() || ! $employeeId) {
+            return;
+        }
+
+        $target = User::find($employeeId);
+        if (! $target || $target->department_id !== authUser()->department_id) {
+            abort(403, 'You can only manage balances for your own department.');
+        }
     }
 }

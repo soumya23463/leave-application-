@@ -24,6 +24,13 @@ if (! function_exists('isAdmin')) {
     }
 }
 
+if (! function_exists('isSuperAdmin')) {
+    function isSuperAdmin(): bool
+    {
+        return authUser()?->isSuperAdmin() ?? false;
+    }
+}
+
 if (! function_exists('isEmployee')) {
     function isEmployee(): bool
     {

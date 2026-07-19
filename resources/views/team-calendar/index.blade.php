@@ -7,17 +7,29 @@
         {{-- Toolbar: month nav + legend --}}
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
             <div class="flex items-center gap-2">
-                <a href="{{ route('team-calendar', ['month' => $prevMonth]) }}"
+                <a href="{{ route('team-calendar', ['month' => $prevMonth, 'department' => $selectedDepartment]) }}"
                    class="w-9 h-9 inline-flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-brand-50 hover:text-brand-600 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                 </a>
                 <h3 class="text-lg font-semibold text-gray-900 min-w-[10rem] text-center">{{ $monthLabel }}</h3>
-                <a href="{{ route('team-calendar', ['month' => $nextMonth]) }}"
+                <a href="{{ route('team-calendar', ['month' => $nextMonth, 'department' => $selectedDepartment]) }}"
                    class="w-9 h-9 inline-flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-brand-50 hover:text-brand-600 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="{{ route('team-calendar', ['month' => $thisMonth]) }}"
+                <a href="{{ route('team-calendar', ['month' => $thisMonth, 'department' => $selectedDepartment]) }}"
                    class="ml-1 text-sm text-brand-600 hover:underline">Today</a>
+
+                {{-- Department filter --}}
+                <form method="GET" action="{{ route('team-calendar') }}" class="ml-2">
+                    <input type="hidden" name="month" value="{{ request('month', $thisMonth) }}">
+                    <select name="department" onchange="this.form.submit()"
+                            class="rounded-lg border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+                        <option value="">All departments</option>
+                        @foreach ($departments as $dept)
+                            <option value="{{ $dept->id }}" @selected($selectedDepartment == $dept->id)>{{ $dept->name }}</option>
+                        @endforeach
+                    </select>
+                </form>
             </div>
 
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">

@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
@@ -22,6 +23,7 @@ class User extends Authenticatable
         'phone',
         'joining_date',
         'status',
+        'department_id',
         'discord_user_id',
         'avatar',
     ];
@@ -40,7 +42,13 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        // Superadmin has all admin capabilities too.
+        return in_array($this->role, ['admin', 'superadmin'], true);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
     }
 
     public function isEmployee(): bool
@@ -72,6 +80,11 @@ class User extends Authenticatable
     public function leaveBalances(): HasMany
     {
         return $this->hasMany(LeaveBalance::class, 'employee_id');
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 
 

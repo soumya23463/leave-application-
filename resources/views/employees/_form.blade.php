@@ -30,8 +30,13 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
             <x-input-label for="role" value="Role" />
+            @php
+                // Only super admins can grant the superadmin role; keep an existing one visible either way.
+                $roles = isSuperAdmin() ? ['employee', 'admin', 'superadmin'] : ['employee', 'admin'];
+                if ($u && ! in_array($u->role, $roles, true)) { $roles[] = $u->role; }
+            @endphp
             <select name="role" id="role" class="mt-1 block w-full rounded-lg border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm transition duration-150 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
-                @foreach (['employee','admin'] as $r)
+                @foreach ($roles as $r)
                     <option value="{{ $r }}" @selected(old('role', $u?->role) === $r)>{{ ucfirst($r) }}</option>
                 @endforeach
             </select>
@@ -51,6 +56,24 @@
             <x-date-input name="joining_date" id="joining_date" :value="old('joining_date', $u?->joining_date?->toDateString())" class="mt-1 block w-full" />
             <x-input-error :messages="$errors->get('joining_date')" class="mt-1" />
         </div>
+    </div>
+
+    <div>
+        <x-input-label for="department_id" value="Department" />
+        @if (isSuperAdmin())
+            <select name="department_id" id="department_id" class="mt-1 block w-full rounded-lg border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm transition duration-150 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+                <option value="">— No department —</option>
+                @foreach (($departments ?? collect()) as $dept)
+                    <option value="{{ $dept->id }}" @selected(old('department_id', $u?->department_id) == $dept->id)>{{ $dept->name }}</option>
+                @endforeach
+            </select>
+        @else
+            {{-- Admins can only work within their own department --}}
+            <input type="text" disabled value="{{ authUser()->department?->name ?? 'No department assigned' }}"
+                   class="mt-1 block w-full rounded-lg border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-500 cursor-not-allowed">
+            <p class="mt-1 text-xs text-gray-400">Employees you create are added to your department.</p>
+        @endif
+        <x-input-error :messages="$errors->get('department_id')" class="mt-1" />
     </div>
 
     <div class="flex items-center gap-3">

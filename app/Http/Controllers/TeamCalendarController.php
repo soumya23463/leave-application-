@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Holiday;
 use App\Models\LeaveRequest;
 use App\Models\WeekendSetting;
@@ -32,8 +33,12 @@ class TeamCalendarController extends Controller
 
         $weekendDays = WeekendSetting::activeWeekendDays();
 
-        $leaves = LeaveRequest::with('employee')
+        $departmentId = $request->query('department') ?: null;
+
+        $leaves = LeaveRequest::with('employee.department')
             ->where('status', 'approved')
+            ->when($departmentId, fn ($q) => $q->whereHas('employee',
+                fn ($e) => $e->where('department_id', $departmentId)))
             ->whereDate('from_date', '<=', $gridEnd->toDateString())
             ->whereDate('to_date', '>=', $gridStart->toDateString())
             ->get();
@@ -71,11 +76,13 @@ class TeamCalendarController extends Controller
         }
 
         return view('team-calendar.index', [
-            'monthLabel' => $monthStart->format('F Y'),
-            'prevMonth'  => $monthStart->copy()->subMonth()->format('Y-m'),
-            'nextMonth'  => $monthStart->copy()->addMonth()->format('Y-m'),
-            'thisMonth'  => now()->format('Y-m'),
-            'weeks'      => $weeks,
+            'monthLabel'         => $monthStart->format('F Y'),
+            'prevMonth'          => $monthStart->copy()->subMonth()->format('Y-m'),
+            'nextMonth'          => $monthStart->copy()->addMonth()->format('Y-m'),
+            'thisMonth'          => now()->format('Y-m'),
+            'weeks'              => $weeks,
+            'departments'        => Department::orderBy('name')->get(),
+            'selectedDepartment' => $departmentId,
         ]);
     }
 }

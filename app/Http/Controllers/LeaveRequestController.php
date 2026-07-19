@@ -25,7 +25,12 @@ class LeaveRequestController extends Controller
             ->latest();
 
         if (! isAdmin()) {
+            // Employees see only their own requests.
             $query->where('user_id', authId());
+        } elseif (! isSuperAdmin()) {
+            // Regular admins see only their own department.
+            $deptId = authUser()->department_id;
+            $query->whereHas('employee', fn ($q) => $q->where('department_id', $deptId));
         }
 
         if (isAdmin() && $request->filled('status')) {
@@ -40,7 +45,9 @@ class LeaveRequestController extends Controller
     public function create()
     {
         $employees = isAdmin()
-            ? User::where('role', 'employee')->where('status', 'active')->orderBy('name')->get()
+            ? User::where('role', 'employee')->where('status', 'active')
+                ->when(! isSuperAdmin(), fn ($q) => $q->where('department_id', authUser()->department_id))
+                ->orderBy('name')->get()
             : collect();
 
         return view('leave-requests.create', array_merge(
@@ -55,6 +62,7 @@ class LeaveRequestController extends Controller
 
         $userId = isAdmin() ? ($data['user_id'] ?? authId()) : authId();
 
+        $this->assertCanFileFor($userId);
         $this->assertNoOverlap($userId, $data['from_date'], $data['to_date']);
 
         $days = LeaveCalculator::calculate($data['from_date'], $data['to_date']);
@@ -98,7 +106,9 @@ class LeaveRequestController extends Controller
         abort_if($leaveRequest->status !== 'pending', 403, 'Only pending requests can be edited.');
 
         $employees = isAdmin()
-            ? User::where('role', 'employee')->where('status', 'active')->orderBy('name')->get()
+            ? User::where('role', 'employee')->where('status', 'active')
+                ->when(! isSuperAdmin(), fn ($q) => $q->where('department_id', authUser()->department_id))
+                ->orderBy('name')->get()
             : collect();
 
         return view('leave-requests.edit', array_merge(
@@ -116,6 +126,7 @@ class LeaveRequestController extends Controller
 
         $userId = isAdmin() ? ($data['user_id'] ?? $leaveRequest->user_id) : authId();
 
+        $this->assertCanFileFor($userId);
         $this->assertNoOverlap($userId, $data['from_date'], $data['to_date'], $leaveRequest->id);
 
         $leaveRequest->update([
@@ -140,6 +151,7 @@ class LeaveRequestController extends Controller
     public function approve(LeaveRequest $leaveRequest)
     {
         abort_unless(isAdmin(), 403);
+        $this->authorizeDepartment($leaveRequest);
 
         if ($leaveRequest->status !== 'pending') {
             return back()->with('error', 'This request is not pending.');
@@ -179,6 +191,9 @@ class LeaveRequestController extends Controller
 
     public function reject(RejectLeaveRequest $request, LeaveRequest $leaveRequest)
     {
+        abort_unless(isAdmin(), 403);
+        $this->authorizeDepartment($leaveRequest);
+
         $data = $request->validated();
 
         if ($leaveRequest->status !== 'pending') {
@@ -226,8 +241,37 @@ class LeaveRequestController extends Controller
 
     protected function authorizeOwnership(LeaveRequest $leaveRequest): void
     {
-        if (! isAdmin() && $leaveRequest->user_id !== authId()) {
-            abort(403);
+        if (! isAdmin()) {
+            if ($leaveRequest->user_id !== authId()) {
+                abort(403);
+            }
+            return;
+        }
+
+        // Regular admins are limited to their own department.
+        $this->authorizeDepartment($leaveRequest);
+    }
+
+    protected function authorizeDepartment(LeaveRequest $leaveRequest): void
+    {
+        if (isAdmin() && ! isSuperAdmin()
+            && $leaveRequest->employee?->department_id !== authUser()->department_id) {
+            abort(403, 'You can only manage leave for your own department.');
+        }
+    }
+
+    /**
+     * A regular admin can only file/edit leave for employees in their own department.
+     */
+    protected function assertCanFileFor(int $userId): void
+    {
+        if (! isAdmin() || isSuperAdmin() || $userId === authId()) {
+            return;
+        }
+
+        $target = User::find($userId);
+        if (! $target || $target->department_id !== authUser()->department_id) {
+            abort(403, 'You can only file leave for your own department.');
         }
     }
 

@@ -29,12 +29,12 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div>
                 <a href="/" class="flex items-center gap-2 text-brand-600 font-semibold text-2xl">
-                    <img src="{{ asset('images/logo.png') }}" alt="Leave Desk" class="w-12 h-12 object-contain">
-                    Leave Desk
+                    <img src="{{ asset('images/logo.png') }}" alt="Leave Desk" style="height: 8rem; width: 15rem; object-fit: contain;">
+
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="w-full sm:max-w-md px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
                 {{ $slot }}
             </div>
         </div>

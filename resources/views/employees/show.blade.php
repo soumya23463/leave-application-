@@ -32,9 +32,11 @@
                     </div>
                     <div>
                         <dt class="text-gray-500">Role</dt>
-                        <dd>
-                            <span class="text-[10px] uppercase px-1.5 py-0.5 rounded {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700' }}">{{ $user->role }}</span>
-                        </dd>
+                        <dd><x-role-badge :role="$user->role" /></dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">Department</dt>
+                        <dd class="font-medium text-gray-800">{{ $user->department?->name ?? '—' }}</dd>
                     </div>
                     <div>
                         <dt class="text-gray-500">Status</dt>
