@@ -9,8 +9,8 @@
             <div class="flex">
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-brand-600 font-semibold text-lg">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        Leave Desk
+                        <img src="{{ asset('images/logo.png') }}" alt="Leave Desk" style="height: 5rem; width: 5rem; object-fit: contain;">
+
                     </a>
                 </div>
 
