@@ -22,6 +22,7 @@ class User extends Authenticatable
         'phone',
         'joining_date',
         'status',
+        'discord_user_id',
     ];
 
     protected $hidden = ['password', 'remember_token'];
