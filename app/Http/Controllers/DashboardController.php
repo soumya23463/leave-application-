@@ -31,11 +31,7 @@ class DashboardController extends Controller
             'approved_requests' => (clone $employeeRequests)->where('status', 'approved')->count(),
         ];
 
-        $onLeaveToday = LeaveRequest::with('employee')
-            ->where('status', 'approved')
-            ->whereDate('from_date', '<=', $today)
-            ->whereDate('to_date', '>=', $today)
-            ->get();
+        $onLeaveToday = $this->onLeaveToday();
 
         // Monthly leave counts for the trailing 12 months
         $months = collect();
@@ -50,6 +46,8 @@ class DashboardController extends Controller
         return view('dashboard.admin', [
             'stats' => $stats,
             'onLeaveToday' => $onLeaveToday,
+            'employeesOnLeave' => $onLeaveToday->where('employee.role', 'employee')->values(),
+            'adminsOnLeave' => $onLeaveToday->where('employee.role', 'admin')->values(),
             'chartLabels' => $months->pluck('label'),
             'chartData' => $months->pluck('count'),
         ]);
@@ -78,6 +76,28 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return view('dashboard.employee', compact('stats', 'recentRequests', 'upcomingHolidays'));
+        $onLeaveToday = $this->onLeaveToday();
+
+        return view('dashboard.employee', [
+            'stats'            => $stats,
+            'recentRequests'   => $recentRequests,
+            'upcomingHolidays' => $upcomingHolidays,
+            'employeesOnLeave' => $onLeaveToday->where('employee.role', 'employee')->values(),
+            'adminsOnLeave'    => $onLeaveToday->where('employee.role', 'admin')->values(),
+        ]);
+    }
+
+    /**
+     * Everyone (employees + admins) whose approved leave covers today.
+     */
+    protected function onLeaveToday()
+    {
+        $today = now()->toDateString();
+
+        return LeaveRequest::with('employee')
+            ->where('status', 'approved')
+            ->whereDate('from_date', '<=', $today)
+            ->whereDate('to_date', '>=', $today)
+            ->get();
     }
 }

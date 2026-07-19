@@ -49,4 +49,6 @@
             @endif
         </x-card>
     </div>
+
+    @include('dashboard._on-leave-today')
 </x-app-layout>
