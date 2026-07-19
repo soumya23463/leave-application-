@@ -14,6 +14,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
             <x-card title="Details">
+                <div class="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
+                    <x-user-avatar :user="$user" size="16" class="text-2xl" />
+                    <div>
+                        <p class="text-lg font-semibold text-gray-900">{{ $user->name }}</p>
+                        <p class="text-sm text-gray-500">{{ $user->email }}</p>
+                    </div>
+                </div>
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div>
                         <dt class="text-gray-500">Name</dt>

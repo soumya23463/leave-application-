@@ -76,7 +76,11 @@
                                             @php $isAdmin = $leave->employee?->role === 'admin'; @endphp
                                             <div class="flex items-center gap-1 truncate rounded px-1 py-0.5 text-[11px] {{ $isAdmin ? 'bg-violet-50 text-violet-700' : 'bg-blue-50 text-blue-700' }}"
                                                  title="{{ $leave->employee?->name }} — {{ $leave->from_date->format('j M') }} to {{ $leave->to_date->format('j M') }}">
-                                                <span class="w-1.5 h-1.5 rounded-full flex-none {{ $isAdmin ? 'bg-violet-500' : 'bg-blue-500' }}"></span>
+                                                @if ($leave->employee?->avatar_url)
+                                                    <img src="{{ $leave->employee->avatar_url }}" alt="" class="w-3.5 h-3.5 rounded-full object-cover flex-none">
+                                                @else
+                                                    <span class="w-1.5 h-1.5 rounded-full flex-none {{ $isAdmin ? 'bg-violet-500' : 'bg-blue-500' }}"></span>
+                                                @endif
                                                 <span class="truncate">{{ $leave->employee?->name }}</span>
                                             </div>
                                         @endforeach

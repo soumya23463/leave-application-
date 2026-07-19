@@ -25,7 +25,12 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($leaveRequests as $req)
                         <tr>
-                            <td class="py-2 pr-4">{{ $req->employee?->name }}</td>
+                            <td class="py-2 pr-4">
+                                <div class="flex items-center gap-2">
+                                    <x-user-avatar :user="$req->employee" size="8" class="text-xs" />
+                                    <span>{{ $req->employee?->name }}</span>
+                                </div>
+                            </td>
                             <td class="py-2 pr-4">{{ $req->from_date->format('j F, Y') }}</td>
                             <td class="py-2 pr-4">{{ $req->to_date->format('j F, Y') }}</td>
                             <td class="py-2 pr-4">{{ $req->days_requested }}</td>

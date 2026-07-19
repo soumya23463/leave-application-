@@ -40,11 +40,27 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($leaveRequests as $req)
                         <tr>
-                            @if (isAdmin())<td class="py-2 pr-4">{{ $req->employee?->name }}</td>@endif
+                            @if (isAdmin())
+                                <td class="py-2 pr-4">
+                                    <div class="flex items-center gap-2">
+                                        <x-user-avatar :user="$req->employee" size="8" class="text-xs" />
+                                        <span>{{ $req->employee?->name }}</span>
+                                    </div>
+                                </td>
+                            @endif
                             <td class="py-2 pr-4">{{ $req->from_date->format('j F, Y') }}</td>
                             <td class="py-2 pr-4">{{ $req->to_date->format('j F, Y') }}</td>
                             <td class="py-2 pr-4">{{ $req->days_requested }}</td>
-                            <td class="py-2 pr-4">{{ $req->approvedBy?->name ?? '—' }}</td>
+                            <td class="py-2 pr-4">
+                                @if ($req->approvedBy)
+                                    <div class="flex items-center gap-2">
+                                        <x-user-avatar :user="$req->approvedBy" size="8" class="text-xs" />
+                                        <span>{{ $req->approvedBy->name }}</span>
+                                    </div>
+                                @else
+                                    —
+                                @endif
+                            </td>
                             <td class="py-2 pr-4"><x-status-badge :status="$req->status" /></td>
                             <td class="py-2 pr-4 text-gray-500">{{ $req->created_at->format('j F, Y') }}</td>
                             <td class="py-2 text-right whitespace-nowrap">

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'joining_date',
         'status',
         'discord_user_id',
+        'avatar',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -45,6 +46,22 @@ class User extends Authenticatable
     public function isEmployee(): bool
     {
         return $this->role === 'employee';
+    }
+
+    /**
+     * Public URL of the uploaded avatar, or null if none is set.
+     */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->avatar) : null;
+    }
+
+    /**
+     * First letter(s) of the name, used as an avatar fallback.
+     */
+    public function getInitialsAttribute(): string
+    {
+        return strtoupper(mb_substr($this->name ?? '?', 0, 1));
     }
 
     public function leaveRequests(): HasMany

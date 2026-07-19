@@ -37,7 +37,12 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($users as $user)
                         <tr>
-                            <td class="py-2 pr-4">{{ $user->name }}</td>
+                            <td class="py-2 pr-4">
+                                <div class="flex items-center gap-2">
+                                    <x-user-avatar :user="$user" size="8" class="text-xs" />
+                                    <span>{{ $user->name }}</span>
+                                </div>
+                            </td>
                             <td class="py-2 pr-4">{{ $user->email }}</td>
                             <td class="py-2 pr-4">
                                 <span class="text-[10px] uppercase px-1.5 py-0.5 rounded {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700' }}">{{ $user->role }}</span>

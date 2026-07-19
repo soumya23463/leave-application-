@@ -2,8 +2,7 @@
 @php
     $onLeave = collect($employeesOnLeave)->concat($adminsOnLeave);
     $count   = $onLeave->count();
-    // slower for a short list, faster loop for many
-    $duration = max(18, $count * 6);
+    $duration = max(18, $count * 6); // used only if the list overflows and starts scrolling
 @endphp
 
 <div class="onleave mt-6">
@@ -16,15 +15,19 @@
     @if ($count === 0)
         <div class="onleave-empty">🎉 Nobody is on leave today — everyone’s in!</div>
     @else
-        <div class="onleave-viewport">
-            {{-- content rendered twice for a seamless infinite loop --}}
-            <div class="onleave-track" style="animation-duration: {{ $duration }}s">
-                @foreach ($onLeave->concat($onLeave) as $leave)
+        <div class="onleave-viewport" data-onleave>
+            {{-- rendered once; JS clones only when it overflows, for a seamless scroll --}}
+            <div class="onleave-track" style="--onleave-duration: {{ $duration }}s">
+                @foreach ($onLeave as $leave)
                     @php $role = $leave->employee?->role; @endphp
                     <div class="onleave-pill">
-                        <span class="onleave-avatar {{ $role === 'admin' ? 'is-admin' : 'is-emp' }}">
-                            {{ strtoupper(mb_substr($leave->employee?->name ?? '?', 0, 1)) }}
-                        </span>
+                        @if ($leave->employee?->avatar_url)
+                            <img src="{{ $leave->employee->avatar_url }}" alt="{{ $leave->employee?->name }}" class="onleave-avatar onleave-avatar-img">
+                        @else
+                            <span class="onleave-avatar {{ $role === 'admin' ? 'is-admin' : 'is-emp' }}">
+                                {{ strtoupper(mb_substr($leave->employee?->name ?? '?', 0, 1)) }}
+                            </span>
+                        @endif
                         <span class="onleave-name">{{ $leave->employee?->name }}</span>
                         <span class="onleave-role {{ $role === 'admin' ? 'is-admin' : 'is-emp' }}">{{ ucfirst($role) }}</span>
                         <span class="onleave-dates">{{ $leave->from_date->format('j M') }} – {{ $leave->to_date->format('j M') }}</span>
@@ -44,10 +47,7 @@
         box-shadow: 0 4px 14px -8px rgba(37,99,235,.35);
         overflow: hidden;
     }
-    .onleave-head {
-        display: flex; align-items: center; gap: 0.5rem;
-        padding: 0 1.1rem 0.7rem;
-    }
+    .onleave-head { display: flex; align-items: center; gap: 0.5rem; padding: 0 1.1rem 0.7rem; }
     .onleave-dot {
         width: 0.55rem; height: 0.55rem; border-radius: 9999px; background: #22c55e;
         box-shadow: 0 0 0 3px rgba(34,197,94,.2);
@@ -62,22 +62,27 @@
     }
     .onleave-empty { padding: 0.35rem 1.1rem 0.1rem; color: #475569; font-size: 0.9rem; }
 
-    .onleave-viewport { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
-    .onleave-track { display: inline-flex; white-space: nowrap; animation-name: onleave-scroll; animation-timing-function: linear; animation-iteration-count: infinite; will-change: transform; }
-    .onleave-viewport:hover .onleave-track { animation-play-state: paused; }
+    .onleave-viewport { overflow: hidden; padding: 0 1.1rem; }
+    /* fade edges + scrolling only when the list actually overflows */
+    .onleave-viewport.is-scrolling { padding: 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+    .onleave-track { display: inline-flex; white-space: nowrap; }
+    .onleave-track.is-scrolling { animation: onleave-scroll var(--onleave-duration) linear infinite; will-change: transform; }
+    .onleave-viewport.is-scrolling:hover .onleave-track { animation-play-state: paused; }
     @keyframes onleave-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
     .onleave-pill {
         display: inline-flex; align-items: center; gap: 0.55rem;
         background: #fff; border: 1px solid #e5e7eb; border-radius: 9999px;
-        padding: 0.4rem 0.9rem 0.4rem 0.4rem; margin: 0 0.4rem;
+        padding: 0.4rem 0.9rem 0.4rem 0.4rem; margin-right: 0.7rem;
         box-shadow: 0 1px 2px rgba(16,24,40,.05);
     }
+    .onleave-track.is-scrolling .onleave-pill { margin: 0 0.4rem; }
     .onleave-avatar {
         width: 1.85rem; height: 1.85rem; border-radius: 9999px;
         display: inline-flex; align-items: center; justify-content: center;
         font-size: 0.8rem; font-weight: 700; color: #fff; flex: none;
     }
+    .onleave-avatar-img { object-fit: cover; box-shadow: 0 0 0 2px #fff; }
     .onleave-avatar.is-emp { background: linear-gradient(135deg,#3b82f6,#2563eb); }
     .onleave-avatar.is-admin { background: linear-gradient(135deg,#8b5cf6,#6d28d9); }
     .onleave-name { font-weight: 600; color: #1f2937; font-size: 0.88rem; }
@@ -90,7 +95,27 @@
     .onleave-dates { font-size: 0.78rem; color: #6b7280; }
 
     @media (prefers-reduced-motion: reduce) {
-        .onleave-track { animation: none; white-space: normal; }
-        .onleave-viewport { -webkit-mask-image: none; mask-image: none; }
+        .onleave-track.is-scrolling { animation: none; }
     }
 </style>
+
+<script>
+    (function () {
+        function initOnLeave() {
+            document.querySelectorAll('[data-onleave]').forEach(function (vp) {
+                if (vp.dataset.onleaveReady) return;
+                var track = vp.querySelector('.onleave-track');
+                if (!track) return;
+                // Only scroll (and duplicate for a seamless loop) if the pills overflow the row.
+                if (track.scrollWidth > vp.clientWidth + 4) {
+                    track.innerHTML += track.innerHTML; // duplicate the set once
+                    vp.classList.add('is-scrolling');
+                    track.classList.add('is-scrolling');
+                }
+                vp.dataset.onleaveReady = '1';
+            });
+        }
+        if (document.readyState !== 'loading') initOnLeave();
+        else document.addEventListener('DOMContentLoaded', initOnLeave);
+    })();
+</script>

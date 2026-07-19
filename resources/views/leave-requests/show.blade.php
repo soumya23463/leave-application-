@@ -12,7 +12,12 @@
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div>
                         <dt class="text-gray-500">Employee</dt>
-                        <dd class="font-medium text-gray-800">{{ $leaveRequest->employee?->name }}</dd>
+                        <dd class="font-medium text-gray-800">
+                            <div class="flex items-center gap-2">
+                                <x-user-avatar :user="$leaveRequest->employee" size="8" class="text-xs" />
+                                <span>{{ $leaveRequest->employee?->name }}</span>
+                            </div>
+                        </dd>
                     </div>
                     <div>
                         <dt class="text-gray-500">Status</dt>
@@ -46,7 +51,16 @@
                     <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div>
                             <dt class="text-gray-500">{{ $leaveRequest->status === 'approved' ? 'Approved by' : 'Actioned by' }}</dt>
-                            <dd class="font-medium text-gray-800">{{ $leaveRequest->approvedBy?->name ?? '—' }}</dd>
+                            <dd class="font-medium text-gray-800">
+                                @if ($leaveRequest->approvedBy)
+                                    <div class="flex items-center gap-2">
+                                        <x-user-avatar :user="$leaveRequest->approvedBy" size="8" class="text-xs" />
+                                        <span>{{ $leaveRequest->approvedBy->name }}</span>
+                                    </div>
+                                @else
+                                    —
+                                @endif
+                            </dd>
                         </div>
                         <div>
                             <dt class="text-gray-500">On</dt>
