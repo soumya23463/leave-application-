@@ -20,10 +20,20 @@ class DashboardController extends Controller
         $today = now()->toDateString();
         $year = now()->year;
 
-        $employeeRequests = LeaveRequest::whereHas('employee', fn ($q) => $q->where('role', 'employee'));
+        // Regular admins see only their own department; super admins see everyone.
+        $scoped = ! isSuperAdmin();
+        $deptId = authUser()->department_id;
+
+        $employeeRequests = LeaveRequest::whereHas('employee', function ($q) use ($scoped, $deptId) {
+            $q->where('role', 'employee');
+            if ($scoped) {
+                $q->where('department_id', $deptId);
+            }
+        });
 
         $stats = [
-            'active_employees' => User::where('role', 'employee')->where('status', 'active')->count(),
+            'active_employees' => User::where('role', 'employee')->where('status', 'active')
+                ->when($scoped, fn ($q) => $q->where('department_id', $deptId))->count(),
             'yearly_holidays'  => Holiday::where('status', true)->whereYear('date', $year)->count(),
             'remaining_holidays' => Holiday::where('status', true)->whereYear('date', $year)->whereDate('date', '>=', $today)->count(),
             'total_requests'   => (clone $employeeRequests)->count(),
@@ -39,6 +49,8 @@ class DashboardController extends Controller
             $m = now()->startOfMonth()->subMonths($i);
             $count = LeaveRequest::whereYear('created_at', $m->year)
                 ->whereMonth('created_at', $m->month)
+                ->when($scoped, fn ($q) => $q->whereHas('employee',
+                    fn ($e) => $e->where('department_id', $deptId)))
                 ->count();
             $months->push(['label' => $m->format('M Y'), 'count' => $count]);
         }
@@ -88,7 +100,8 @@ class DashboardController extends Controller
     }
 
     /**
-     * Everyone (employees + admins) whose approved leave covers today.
+     * People whose approved leave covers today. Super admins see everyone;
+     * everyone else sees only their own department.
      */
     protected function onLeaveToday()
     {
@@ -96,6 +109,8 @@ class DashboardController extends Controller
 
         return LeaveRequest::with('employee')
             ->where('status', 'approved')
+            ->when(! isSuperAdmin(), fn ($q) => $q->whereHas('employee',
+                fn ($e) => $e->where('department_id', authUser()->department_id)))
             ->whereDate('from_date', '<=', $today)
             ->whereDate('to_date', '>=', $today)
             ->get();

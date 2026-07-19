@@ -37,8 +37,9 @@ class LeaveRequestObserver
                 );
             }
 
-            // Sabhi connected admins ko approval DM (khud request karne wale ko chhod ke)
+            // Sirf employee ke apne department ke connected admins ko approval DM (requester ko chhod ke)
             $admins = User::where('role', 'admin')
+                ->where('department_id', $employee?->department_id)
                 ->whereNotNull('discord_user_id')
                 ->where('id', '!=', $leaveRequest->user_id)
                 ->get();

@@ -8,7 +8,7 @@ use App\Models\WeekendSetting;
 class WeekendSettingController extends Controller
 {
     /**
-     * The whole resource is admin-only (guarded by middleware on the route).
+     * All users can view weekend settings; only admins can manage them.
      */
     public function index()
     {
@@ -19,11 +19,15 @@ class WeekendSettingController extends Controller
 
     public function create()
     {
+        abort_unless(isAdmin(), 403);
+
         return view('weekend-settings.create');
     }
 
     public function store(WeekendSettingRequest $request)
     {
+        abort_unless(isAdmin(), 403);
+
         WeekendSetting::create($request->validated());
 
         return redirect()->route('weekend-settings.index')->with('success', 'Weekend setting created.');
@@ -36,11 +40,15 @@ class WeekendSettingController extends Controller
 
     public function edit(WeekendSetting $weekendSetting)
     {
+        abort_unless(isAdmin(), 403);
+
         return view('weekend-settings.edit', compact('weekendSetting'));
     }
 
     public function update(WeekendSettingRequest $request, WeekendSetting $weekendSetting)
     {
+        abort_unless(isAdmin(), 403);
+
         $weekendSetting->update($request->validated());
 
         return redirect()->route('weekend-settings.index')->with('success', 'Weekend setting updated.');
@@ -48,6 +56,8 @@ class WeekendSettingController extends Controller
 
     public function destroy(WeekendSetting $weekendSetting)
     {
+        abort_unless(isAdmin(), 403);
+
         $weekendSetting->delete();
 
         return redirect()->route('weekend-settings.index')->with('success', 'Weekend setting deleted.');

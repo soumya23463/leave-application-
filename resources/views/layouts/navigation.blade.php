@@ -47,9 +47,7 @@
                         <x-nav-link :href="route('departments.index')" :active="request()->routeIs('departments.*')">Departments</x-nav-link>
                     @endif
                     <x-nav-link :href="route('holidays.index')" :active="request()->routeIs('holidays.*')">Holidays</x-nav-link>
-                    @if (isAdmin())
-                        <x-nav-link :href="route('weekend-settings.index')" :active="request()->routeIs('weekend-settings.*')">Weekends</x-nav-link>
-                    @endif
+                    <x-nav-link :href="route('weekend-settings.index')" :active="request()->routeIs('weekend-settings.*')">Weekends</x-nav-link>
                 </div>
             </div>
 
@@ -93,11 +91,10 @@
                 <!-- User dropdown -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center gap-2 px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none">
-                            <x-user-avatar :user="$user" size="7" class="text-xs" />
-                            <div>{{ $user->name }}</div>
-                            <x-role-badge :role="$user->role" class="ms-1" />
-                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        <button class="group flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1 pl-1 pr-2.5 shadow-sm hover:bg-gray-50 hover:border-gray-300 transition focus:outline-none focus:ring-2 focus:ring-brand-500/30">
+                            <x-user-avatar :user="$user" size="8" class="text-xs" />
+                            <x-role-badge :role="$user->role" />
+                            <svg class="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                         </button>
                     </x-slot>
                     <x-slot name="content">
@@ -142,9 +139,7 @@
                 <x-responsive-nav-link :href="route('departments.index')" :active="request()->routeIs('departments.*')">Departments</x-responsive-nav-link>
             @endif
             <x-responsive-nav-link :href="route('holidays.index')" :active="request()->routeIs('holidays.*')">Holidays</x-responsive-nav-link>
-            @if (isAdmin())
-                <x-responsive-nav-link :href="route('weekend-settings.index')" :active="request()->routeIs('weekend-settings.*')">Weekends</x-responsive-nav-link>
-            @endif
+            <x-responsive-nav-link :href="route('weekend-settings.index')" :active="request()->routeIs('weekend-settings.*')">Weekends</x-responsive-nav-link>
             @unless (isSuperAdmin())
                 <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">Notifications @if($unreadCount) ({{ $unreadCount }}) @endif</x-responsive-nav-link>
             @endunless

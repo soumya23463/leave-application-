@@ -3,12 +3,12 @@
 <div class="space-y-5">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-            <x-input-label for="name" value="Name" />
+            <x-input-label for="name" value="Name" :required="true" />
             <x-text-input type="text" name="name" id="name" :value="old('name', $u?->name)" class="mt-1 block w-full" />
             <x-input-error :messages="$errors->get('name')" class="mt-1" />
         </div>
         <div>
-            <x-input-label for="email" value="Email" />
+            <x-input-label for="email" value="Email" :required="true" />
             <x-text-input type="email" name="email" id="email" :value="old('email', $u?->email)" class="mt-1 block w-full" />
             <x-input-error :messages="$errors->get('email')" class="mt-1" />
         </div>
@@ -16,8 +16,8 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-            <x-input-label for="password" :value="$u ? 'Password (leave blank to keep current)' : 'Password'" />
-            <x-text-input type="password" name="password" id="password" class="mt-1 block w-full" autocomplete="new-password" />
+            <x-input-label for="password" :value="$u ? 'Password (leave blank to keep current)' : 'Password'" :required="! $u" />
+            <x-password-input name="password" id="password" class="mt-1 block w-full" autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password')" class="mt-1" />
         </div>
         <div>
@@ -29,7 +29,7 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-            <x-input-label for="role" value="Role" />
+            <x-input-label for="role" value="Role" :required="true" />
             @php
                 // Only super admins can grant the superadmin role; keep an existing one visible either way.
                 $roles = isSuperAdmin() ? ['employee', 'admin', 'superadmin'] : ['employee', 'admin'];
@@ -43,7 +43,7 @@
             <x-input-error :messages="$errors->get('role')" class="mt-1" />
         </div>
         <div>
-            <x-input-label for="status" value="Status" />
+            <x-input-label for="status" value="Status" :required="true" />
             <select name="status" id="status" class="mt-1 block w-full rounded-lg border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm transition duration-150 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
                 @foreach (['active','inactive'] as $st)
                     <option value="{{ $st }}" @selected(old('status', $u?->status) === $st)>{{ ucfirst($st) }}</option>
@@ -59,10 +59,10 @@
     </div>
 
     <div>
-        <x-input-label for="department_id" value="Department" />
+        <x-input-label for="department_id" value="Department" :required="true" />
         @if (isSuperAdmin())
-            <select name="department_id" id="department_id" class="mt-1 block w-full rounded-lg border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm transition duration-150 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
-                <option value="">— No department —</option>
+            <select name="department_id" id="department_id" required class="mt-1 block w-full rounded-lg border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm transition duration-150 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+                <option value="" disabled @selected(! old('department_id', $u?->department_id))>— Select department —</option>
                 @foreach (($departments ?? collect()) as $dept)
                     <option value="{{ $dept->id }}" @selected(old('department_id', $u?->department_id) == $dept->id)>{{ $dept->name }}</option>
                 @endforeach

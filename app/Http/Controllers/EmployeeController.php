@@ -42,6 +42,10 @@ class EmployeeController extends Controller
 
         // A regular admin can only create employees within their own department.
         if (! isSuperAdmin()) {
+            if (! authUser()->department_id) {
+                return back()->withInput()
+                    ->with('error', 'You must be assigned to a department before creating employees.');
+            }
             $data['department_id'] = authUser()->department_id;
         }
 

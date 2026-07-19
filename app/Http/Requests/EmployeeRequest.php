@@ -31,7 +31,8 @@ class EmployeeRequest extends FormRequest
             'phone'        => ['nullable', 'string', 'max:255'],
             'role'          => ['required', Rule::in($allowedRoles)],
             'status'        => ['required', 'in:active,inactive'],
-            'department_id' => ['nullable', 'exists:departments,id'],
+            // Super admins pick a department (required); regular admins have it auto-set to their own.
+            'department_id' => [isSuperAdmin() ? 'required' : 'nullable', 'exists:departments,id'],
             'joining_date'  => ['nullable', 'date'],
         ];
     }

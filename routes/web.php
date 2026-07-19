@@ -39,6 +39,9 @@ Route::middleware(['auth'])->group(function () {
     // Holidays (all view; admin manages)
     Route::resource('holidays', HolidayController::class);
 
+    // Weekend settings (all view; admin manages)
+    Route::resource('weekend-settings', WeekendSettingController::class);
+
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.readAll');
@@ -61,8 +64,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('holidays-import/sample', [HolidayController::class, 'sample'])->name('holidays.sample');
         Route::post('holidays-import', [HolidayController::class, 'import'])->name('holidays.import');
-
-        Route::resource('weekend-settings', WeekendSettingController::class);
     });
 });
 

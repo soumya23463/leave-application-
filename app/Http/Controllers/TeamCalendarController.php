@@ -33,11 +33,15 @@ class TeamCalendarController extends Controller
 
         $weekendDays = WeekendSetting::activeWeekendDays();
 
-        $departmentId = $request->query('department') ?: null;
+        // Only super admins can filter across all departments; admins & employees are locked to their own.
+        $canSeeAll = isSuperAdmin();
+        $departmentId = $canSeeAll
+            ? ($request->query('department') ?: null)
+            : authUser()->department_id;
 
         $leaves = LeaveRequest::with('employee.department')
             ->where('status', 'approved')
-            ->when($departmentId, fn ($q) => $q->whereHas('employee',
+            ->when(! $canSeeAll || $departmentId, fn ($q) => $q->whereHas('employee',
                 fn ($e) => $e->where('department_id', $departmentId)))
             ->whereDate('from_date', '<=', $gridEnd->toDateString())
             ->whereDate('to_date', '>=', $gridStart->toDateString())
@@ -83,6 +87,8 @@ class TeamCalendarController extends Controller
             'weeks'              => $weeks,
             'departments'        => Department::orderBy('name')->get(),
             'selectedDepartment' => $departmentId,
+            'showFilter'         => $canSeeAll,
+            'ownDeptName'        => $canSeeAll ? null : (authUser()->department?->name ?? 'No department'),
         ]);
     }
 }

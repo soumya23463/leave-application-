@@ -19,17 +19,24 @@
                 <a href="{{ route('team-calendar', ['month' => $thisMonth, 'department' => $selectedDepartment]) }}"
                    class="ml-1 text-sm text-brand-600 hover:underline">Today</a>
 
-                {{-- Department filter --}}
-                <form method="GET" action="{{ route('team-calendar') }}" class="ml-2">
-                    <input type="hidden" name="month" value="{{ request('month', $thisMonth) }}">
-                    <select name="department" onchange="this.form.submit()"
-                            class="rounded-lg border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
-                        <option value="">All departments</option>
-                        @foreach ($departments as $dept)
-                            <option value="{{ $dept->id }}" @selected($selectedDepartment == $dept->id)>{{ $dept->name }}</option>
-                        @endforeach
-                    </select>
-                </form>
+                {{-- Admins can filter across departments; employees are locked to their own --}}
+                @if ($showFilter)
+                    <form method="GET" action="{{ route('team-calendar') }}" class="ml-2">
+                        <input type="hidden" name="month" value="{{ request('month', $thisMonth) }}">
+                        <select name="department" onchange="this.form.submit()"
+                                class="rounded-lg border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+                            <option value="">All departments</option>
+                            @foreach ($departments as $dept)
+                                <option value="{{ $dept->id }}" @selected($selectedDepartment == $dept->id)>{{ $dept->name }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                @else
+                    <span class="ml-2 inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-3 py-1.5 text-sm font-medium text-brand-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"/></svg>
+                        {{ $ownDeptName }}
+                    </span>
+                @endif
             </div>
 
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
