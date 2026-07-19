@@ -56,6 +56,11 @@
             <x-date-input name="joining_date" id="joining_date" :value="old('joining_date', $u?->joining_date?->toDateString())" class="mt-1 block w-full" />
             <x-input-error :messages="$errors->get('joining_date')" class="mt-1" />
         </div>
+        <div>
+            <x-input-label for="dob" value="Date of birth" :required="true" />
+            <x-date-input name="dob" id="dob" :value="old('dob', $u?->dob?->toDateString())" class="mt-1 block w-full" />
+            <x-input-error :messages="$errors->get('dob')" class="mt-1" />
+        </div>
     </div>
 
     <div>

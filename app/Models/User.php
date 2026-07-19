@@ -22,6 +22,7 @@ class User extends Authenticatable
         'role',
         'phone',
         'joining_date',
+        'dob',
         'status',
         'department_id',
         'discord_user_id',
@@ -36,6 +37,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'joining_date' => 'date',
+            'dob' => 'date',
         ];
     }
 

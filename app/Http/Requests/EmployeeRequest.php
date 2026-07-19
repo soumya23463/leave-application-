@@ -34,6 +34,7 @@ class EmployeeRequest extends FormRequest
             // Super admins pick a department (required); regular admins have it auto-set to their own.
             'department_id' => [isSuperAdmin() ? 'required' : 'nullable', 'exists:departments,id'],
             'joining_date'  => ['nullable', 'date'],
+            'dob'           => ['required', 'date', 'before:today'],
         ];
     }
 }
