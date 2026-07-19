@@ -48,7 +48,7 @@
         </div>
         <div>
             <x-input-label for="joining_date" value="Joining date" />
-            <x-text-input type="date" name="joining_date" id="joining_date" :value="old('joining_date', $u?->joining_date?->toDateString())" class="mt-1 block w-full" />
+            <x-date-input name="joining_date" id="joining_date" :value="old('joining_date', $u?->joining_date?->toDateString())" class="mt-1 block w-full" />
             <x-input-error :messages="$errors->get('joining_date')" class="mt-1" />
         </div>
     </div>

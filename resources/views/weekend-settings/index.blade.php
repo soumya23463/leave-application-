@@ -23,7 +23,7 @@
                     @forelse ($weekendSettings as $setting)
                         <tr>
                             <td class="py-2 pr-4">{{ implode(', ', (array) $setting->days) }}</td>
-                            <td class="py-2 pr-4">{{ $setting->effective_date->format('d M Y') }}</td>
+                            <td class="py-2 pr-4">{{ $setting->effective_date->format('j F, Y') }}</td>
                             <td class="py-2 pr-4"><x-status-badge :status="$setting->status ? 'Active' : 'Inactive'" /></td>
                             <td class="py-2 text-right whitespace-nowrap">
                                 <a href="{{ route('weekend-settings.edit', $setting) }}" class="text-brand-600 hover:underline">Edit</a>

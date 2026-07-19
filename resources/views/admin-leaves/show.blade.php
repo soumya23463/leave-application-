@@ -20,11 +20,11 @@
                     </div>
                     <div>
                         <dt class="text-gray-500">From</dt>
-                        <dd class="font-medium text-gray-800">{{ $leaveRequest->from_date->format('d M Y') }}</dd>
+                        <dd class="font-medium text-gray-800">{{ $leaveRequest->from_date->format('j F, Y') }}</dd>
                     </div>
                     <div>
                         <dt class="text-gray-500">To</dt>
-                        <dd class="font-medium text-gray-800">{{ $leaveRequest->to_date->format('d M Y') }}</dd>
+                        <dd class="font-medium text-gray-800">{{ $leaveRequest->to_date->format('j F, Y') }}</dd>
                     </div>
                     <div>
                         <dt class="text-gray-500">Days</dt>
@@ -32,7 +32,7 @@
                     </div>
                     <div>
                         <dt class="text-gray-500">Applied</dt>
-                        <dd class="font-medium text-gray-800">{{ $leaveRequest->created_at->format('d M Y') }}</dd>
+                        <dd class="font-medium text-gray-800">{{ $leaveRequest->created_at->format('j F, Y') }}</dd>
                     </div>
                     <div class="sm:col-span-2">
                         <dt class="text-gray-500">Reason</dt>
@@ -49,7 +49,7 @@
                     </div>
                     <div>
                         <dt class="text-gray-500">On</dt>
-                        <dd class="font-medium text-gray-800">{{ $leaveRequest->approved_at?->format('d M Y H:i') ?? '—' }}</dd>
+                        <dd class="font-medium text-gray-800">{{ $leaveRequest->approved_at?->format('j F, Y H:i') ?? '—' }}</dd>
                     </div>
                 </dl>
             </x-card>

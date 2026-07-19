@@ -39,7 +39,7 @@
                     </div>
                     <div>
                         <dt class="text-gray-500">Joining date</dt>
-                        <dd class="font-medium text-gray-800">{{ $user->joining_date?->format('d M Y') ?? '—' }}</dd>
+                        <dd class="font-medium text-gray-800">{{ $user->joining_date?->format('j F, Y') ?? '—' }}</dd>
                     </div>
                 </dl>
             </x-card>

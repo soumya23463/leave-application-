@@ -24,7 +24,7 @@
 
     <div>
         <x-input-label for="effective_date" value="Effective date" />
-        <x-text-input type="date" name="effective_date" id="effective_date" class="mt-1 block w-full"
+        <x-date-input name="effective_date" id="effective_date" class="mt-1 block w-full"
                       :value="old('effective_date', optional($ws)->effective_date?->toDateString() ?? now()->toDateString())" />
         <x-input-error :messages="$errors->get('effective_date')" class="mt-1" />
     </div>

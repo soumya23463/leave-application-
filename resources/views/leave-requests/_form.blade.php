@@ -17,12 +17,12 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
             <x-input-label for="from_date" value="From date" />
-            <x-text-input type="date" name="from_date" id="from_date" value="{{ old('from_date', $lr?->from_date?->toDateString()) }}" class="mt-1 block w-full" />
+            <x-date-input name="from_date" id="from_date" data-min-today value="{{ old('from_date', $lr?->from_date?->toDateString()) }}" class="mt-1 block w-full" />
             <x-input-error :messages="$errors->get('from_date')" class="mt-1" />
         </div>
         <div>
             <x-input-label for="to_date" value="To date" />
-            <x-text-input type="date" name="to_date" id="to_date" value="{{ old('to_date', $lr?->to_date?->toDateString()) }}" class="mt-1 block w-full" />
+            <x-date-input name="to_date" id="to_date" data-min-today value="{{ old('to_date', $lr?->to_date?->toDateString()) }}" class="mt-1 block w-full" />
             <x-input-error :messages="$errors->get('to_date')" class="mt-1" />
         </div>
     </div>

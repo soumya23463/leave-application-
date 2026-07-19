@@ -18,7 +18,7 @@
             </div>
             <div>
                 <dt class="text-gray-500">Date</dt>
-                <dd class="mt-1 text-gray-800">{{ $holiday->date->format('d M Y') }}</dd>
+                <dd class="mt-1 text-gray-800">{{ $holiday->date->format('j F, Y') }}</dd>
             </div>
             <div>
                 <dt class="text-gray-500">Status</dt>

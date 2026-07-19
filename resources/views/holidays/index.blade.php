@@ -60,7 +60,7 @@
                             <td class="py-2 pr-4">
                                 <a href="{{ route('holidays.show', $holiday) }}" class="text-brand-600 hover:underline">{{ $holiday->name }}</a>
                             </td>
-                            <td class="py-2 pr-4">{{ $holiday->date->format('d M Y') }}</td>
+                            <td class="py-2 pr-4">{{ $holiday->date->format('j F, Y') }}</td>
                             <td class="py-2 pr-4 text-gray-600">{{ \Illuminate\Support\Str::limit($holiday->description, 50) ?: '—' }}</td>
                             <td class="py-2 pr-4"><x-status-badge :status="$holiday->status ? 'Active' : 'Inactive'" /></td>
                             @if (isAdmin())

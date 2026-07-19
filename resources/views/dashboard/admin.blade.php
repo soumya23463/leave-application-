@@ -37,8 +37,8 @@
                                     <td class="py-2 pr-4">{{ $leave->employee?->name }}
                                         <span class="text-xs text-gray-400">({{ $leave->employee?->role }})</span>
                                     </td>
-                                    <td class="py-2 pr-4">{{ $leave->from_date->format('d M Y') }}</td>
-                                    <td class="py-2 pr-4">{{ $leave->to_date->format('d M Y') }}</td>
+                                    <td class="py-2 pr-4">{{ $leave->from_date->format('j F, Y') }}</td>
+                                    <td class="py-2 pr-4">{{ $leave->to_date->format('j F, Y') }}</td>
                                     <td class="py-2">{{ $leave->days_requested }}</td>
                                 </tr>
                             @endforeach

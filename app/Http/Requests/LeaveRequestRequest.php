@@ -14,7 +14,7 @@ class LeaveRequestRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'from_date' => ['required', 'date'],
+            'from_date' => ['required', 'date', 'after_or_equal:today'],
             'to_date'   => ['required', 'date', 'after_or_equal:from_date'],
             'reason'    => ['required', 'string', 'max:2000'],
         ];

@@ -15,7 +15,7 @@ class AdminLeaveRequest extends FormRequest
     {
         return [
             'user_id'   => ['required', 'exists:users,id'],
-            'from_date' => ['required', 'date'],
+            'from_date' => ['required', 'date', 'after_or_equal:today'],
             'to_date'   => ['required', 'date', 'after_or_equal:from_date'],
             'reason'    => ['required', 'string', 'max:2000'],
         ];

@@ -9,7 +9,7 @@
 
     <div>
         <x-input-label for="date" value="Date" />
-        <x-text-input type="date" name="date" id="date" :value="old('date', $h?->date?->toDateString())" class="mt-1 block w-full" />
+        <x-date-input name="date" id="date" :value="old('date', $h?->date?->toDateString())" class="mt-1 block w-full" />
         <x-input-error :messages="$errors->get('date')" class="mt-1" />
     </div>
 

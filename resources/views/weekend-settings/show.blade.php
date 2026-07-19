@@ -14,7 +14,7 @@
             </div>
             <div>
                 <dt class="text-gray-500">Effective date</dt>
-                <dd class="font-medium text-gray-800">{{ $weekendSetting->effective_date->format('d M Y') }}</dd>
+                <dd class="font-medium text-gray-800">{{ $weekendSetting->effective_date->format('j F, Y') }}</dd>
             </div>
             <div>
                 <dt class="text-gray-500">Status</dt>

@@ -43,7 +43,7 @@
                                 <span class="text-[10px] uppercase px-1.5 py-0.5 rounded {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700' }}">{{ $user->role }}</span>
                             </td>
                             <td class="py-2 pr-4">{{ $user->phone ?? '—' }}</td>
-                            <td class="py-2 pr-4">{{ $user->joining_date?->format('d M Y') ?? '—' }}</td>
+                            <td class="py-2 pr-4">{{ $user->joining_date?->format('j F, Y') ?? '—' }}</td>
                             <td class="py-2 pr-4"><x-status-badge :status="$user->status" /></td>
                             <td class="py-2 text-right whitespace-nowrap">
                                 <a href="{{ route('employees.show', $user) }}" class="text-brand-600 hover:underline">View</a>

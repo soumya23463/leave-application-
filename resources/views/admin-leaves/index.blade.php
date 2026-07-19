@@ -26,11 +26,11 @@
                     @forelse ($leaveRequests as $req)
                         <tr>
                             <td class="py-2 pr-4">{{ $req->employee?->name }}</td>
-                            <td class="py-2 pr-4">{{ $req->from_date->format('d M Y') }}</td>
-                            <td class="py-2 pr-4">{{ $req->to_date->format('d M Y') }}</td>
+                            <td class="py-2 pr-4">{{ $req->from_date->format('j F, Y') }}</td>
+                            <td class="py-2 pr-4">{{ $req->to_date->format('j F, Y') }}</td>
                             <td class="py-2 pr-4">{{ $req->days_requested }}</td>
                             <td class="py-2 pr-4"><x-status-badge :status="$req->status" /></td>
-                            <td class="py-2 pr-4 text-gray-500">{{ $req->created_at->format('d M Y') }}</td>
+                            <td class="py-2 pr-4 text-gray-500">{{ $req->created_at->format('j F, Y') }}</td>
                             <td class="py-2 text-right whitespace-nowrap">
                                 <a href="{{ route('admin-leaves.show', $req) }}" class="text-brand-600 hover:underline">View</a>
                                 <a href="{{ route('admin-leaves.edit', $req) }}" class="ms-2 text-gray-600 hover:underline">Edit</a>

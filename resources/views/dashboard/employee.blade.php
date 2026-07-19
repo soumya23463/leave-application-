@@ -24,7 +24,7 @@
                     @foreach ($recentRequests as $req)
                         <a href="{{ route('leave-requests.show', $req) }}" class="flex items-center justify-between px-6 py-3 hover:bg-gray-50">
                             <div>
-                                <p class="text-sm font-medium text-gray-800">{{ $req->from_date->format('d M') }} – {{ $req->to_date->format('d M Y') }}</p>
+                                <p class="text-sm font-medium text-gray-800">{{ $req->from_date->format('j F') }} – {{ $req->to_date->format('j F, Y') }}</p>
                                 <p class="text-xs text-gray-500">{{ $req->days_requested }} day(s)</p>
                             </div>
                             <x-status-badge :status="$req->status" />
@@ -42,7 +42,7 @@
                     @foreach ($upcomingHolidays as $holiday)
                         <div class="flex items-center justify-between px-6 py-3">
                             <p class="text-sm font-medium text-gray-800">{{ $holiday->name }}</p>
-                            <p class="text-xs text-gray-500">{{ $holiday->date->format('d M Y') }}</p>
+                            <p class="text-xs text-gray-500">{{ $holiday->date->format('j F, Y') }}</p>
                         </div>
                     @endforeach
                 </div>

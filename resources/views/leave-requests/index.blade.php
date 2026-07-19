@@ -41,12 +41,12 @@
                     @forelse ($leaveRequests as $req)
                         <tr>
                             @if (isAdmin())<td class="py-2 pr-4">{{ $req->employee?->name }}</td>@endif
-                            <td class="py-2 pr-4">{{ $req->from_date->format('d M Y') }}</td>
-                            <td class="py-2 pr-4">{{ $req->to_date->format('d M Y') }}</td>
+                            <td class="py-2 pr-4">{{ $req->from_date->format('j F, Y') }}</td>
+                            <td class="py-2 pr-4">{{ $req->to_date->format('j F, Y') }}</td>
                             <td class="py-2 pr-4">{{ $req->days_requested }}</td>
                             <td class="py-2 pr-4">{{ $req->approvedBy?->name ?? '—' }}</td>
                             <td class="py-2 pr-4"><x-status-badge :status="$req->status" /></td>
-                            <td class="py-2 pr-4 text-gray-500">{{ $req->created_at->format('d M Y') }}</td>
+                            <td class="py-2 pr-4 text-gray-500">{{ $req->created_at->format('j F, Y') }}</td>
                             <td class="py-2 text-right whitespace-nowrap">
                                 <a href="{{ route('leave-requests.show', $req) }}" class="text-brand-600 hover:underline">View</a>
                                 @if ($req->status === 'pending' && (isAdmin() || $req->user_id === authId()))
